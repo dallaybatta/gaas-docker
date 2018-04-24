@@ -47,9 +47,6 @@ $./runall.sh <GROUP_ID>
 You can create multiple groups each for specific customer, the GAAS is configured to have the gobblin sample, we can have our own templates deployed, we can copy the 
 deployment artifacts ( template file, jar files) using the docker cp command.
 
-These configurations can start a  single cluster and hook to the existing cluster. It is yet in beta, it needs more work.
-
-
 The GAAS contains the wikipedia sample template deployed which can be tested after the gass cluster container is started.
 1) $./test.sh <GROUP_ID>
 2) Go to the corresponding container work log 
@@ -57,6 +54,9 @@ $.docker exec -it docker-gobblin-cluster-worker-<GROUP_ID> /bin/bash
 tail -f worker.single.out
  
 You will see the results in the worker.single.out log.
+
+It is yet in beta(not ready for production usage fully), it needs more work.
+
 
 
 
