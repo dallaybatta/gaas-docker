@@ -1,0 +1,65 @@
+The project structure contains the following modules
+- hadoop
+- kafka
+- service
+- master
+- worker
+
+Each module have got the following structure
+<module>
+- build.sh   This is the build script which will create the Docker Image for the module.
+- run.sh     This is the run script which will start the docker container of the module.
+- entry.sh   This is the script that is invoved as entry script in the container start.
+- publish.sh This is the script which will publish the docker image to the Docker registry. (To Be Done)
+- Dockerfile Docker file for the module
+- support    This contains the template file which will be updated during the container run process.
+
+For the kafka/hadoop the build script is not required as we are using the opensource version of it.
+
+The project modules are started by executing the ./run.sh <groupId> command.
+${module}./run.sh 1
+The above command will create the container, it will check for the dependent containers running too. In case the dependent container which is 
+linked in run.sh is not running the container run will not be executed.
+
+Here is how the GAAS containers will be started, the following order needs to be followed 
+
+IMPORTANT !!! Please run the init.sh prior building the images. This will download the gobblin binary required to build the image.
+You will need to build the Docker images locally before starting the GAAS container cluster.
+
+Building the images:
+
+service$./build.sh
+master$./build.sh
+worker$./build.sh
+
+Running the Container in a Group:
+
+kafka$./run-zk.sh 1
+kafka$./run-kafka.sh 1
+service$./run.sh 1
+master$./run.sh 1
+worker$./run.sh 1
+
+
+You can create the GAAS cluster group by running the runall.sh script as 
+$./runall.sh <GROUP_ID>
+
+You can create multiple groups each for specific customer, the GAAS is configured to have the gobblin sample, we can have our own templates deployed, we can copy the 
+deployment artifacts ( template file, jar files) using the docker cp command.
+
+These configurations can start a  single cluster and hook to the existing cluster. It is yet in beta, it needs more work.
+
+
+The GAAS contains the wikipedia sample template deployed which can be tested after the gass cluster container is started.
+1) $./test.sh <GROUP_ID>
+2) Go to the corresponding container work log 
+$.docker exec -it docker-gobblin-cluster-worker-<GROUP_ID> /bin/bash 
+tail -f worker.single.out
+ 
+You will see the results in the worker.single.out log.
+
+
+
+
+
+

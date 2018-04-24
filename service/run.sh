@@ -1,0 +1,69 @@
+createDockerContainer()
+{
+ DOCKER_CONTAINER_NAME=$DOCKER_CONTAINER_NAME-$@
+}
+
+GROUP_ID=$1
+DOCKER_IMAGE_TAG_NAME=dallaybatta/gaas-service
+DOCKER_CONTAINER_NAME=docker-gobblin-service
+createDockerContainer $GROUP_ID
+GOBBLIN_SERVICE_PORT_MAPPING_PREFIX=60000
+val=`expr $GOBBLIN_SERVICE_MAPPING_PREFIX + $GROUP_ID`
+GOBBLIN_SERVICE_PORT_MAPPING=$val
+
+echo "DOCKER_SERVICE_PORT_MAPPING" $DOCKER_SERVICE_PORT_MAPPING
+
+DOCKER_LINKINGS=""
+
+GOBBLIN_SERVICE_WORK_DIRECTORY=$2
+if [ "$2" == "" ]; then
+    echo "No arguments(GOBBLIN_SERVICE_WORK_DIRECTORY) provided, setting to default "
+    GOBBLIN_SERVICE_WORK_DIRECTORY="/home/dip/gobblin-dist/service-work-dir"
+fi
+echo "GOBBLIN_SERVICE_WORK_DIRECTORY " $GOBBLIN_SERVICE_WORK_DIRECTORY
+
+GOBBLIN_SERVICE_TEMPLATE_PATH=$3
+if [ "$3" == "" ]; then
+    echo "No arguments(GOBBLIN_SERVICE_TEMPLATE_PATH) provided, setting to default "
+    GOBBLIN_SERVICE_TEMPLATE_PATH="/home/dip/gobblin-dist/templates"
+fi
+echo "GOBBLIN_SERVICE_TEMPLATE_PATH " $GOBBLIN_SERVICE_TEMPLATE_PATH
+
+KAFKA_BOOTSTRAP_SERVER=$4
+if [ "$4" == "" ]; then
+    echo "No arguments(KAFKA_BOOTSTRAP_SERVER) provided, setting to default "
+    KAFKA_BOOTSTRAP_SERVER="docker-dip-kafka-"$GROUP_ID":9092"
+    DOCKER_LINKINGS+=" --link docker-dip-kafka-"$GROUP_ID":docker-dip-kafka-"$GROUP_ID
+    echo "DOCKER_LINKINGS "$DOCKER_LINKINGS
+fi
+echo "KAFKA_BOOTSTRAP_SERVER " $KAFKA_BOOTSTRAP_SERVER
+
+GOBBLIN_SERVICE_PORT=$5
+if [ "$5" == "" ]; then
+    echo "No arguments(GOBBLIN_SERVICE_PORT) provided, setting to default "
+    GOBBLIN_SERVICE_PORT=9099
+fi
+echo "GOBBLIN_SERVICE_PORT " $GOBBLIN_SERVICE_PORT
+
+CONTAINER_EXISTS=$(docker ps -a | grep $DOCKER_CONTAINER_NAME)
+
+# This needs refactoring.
+if [ ! "$CONTAINER_EXISTS" ]; then
+		docker run -h $DOCKER_CONTAINER_NAME  --name  $DOCKER_CONTAINER_NAME  $DOCKER_LINKINGS -v /opt/dip_docker_data/gobblin-service-$GROUP_ID/templates:/home/dip/gobblin-dist/templates -p $GOBBLIN_SERVICE_PORT_MAPPING:$GOBBLIN_SERVICE_PORT -e GOBBLIN_SERVICE_WORK_DIRECTORY=$GOBBLIN_SERVICE_WORK_DIRECTORY -e GOBBLIN_SERVICE_TEMPLATE_PATH=$GOBBLIN_SERVICE_TEMPLATE_PATH -e KAFKA_BOOTSTRAP_SERVER=$KAFKA_BOOTSTRAP_SERVER -e GOBBLIN_SERVICE_PORT=$GOBBLIN_SERVICE_PORT -d $DOCKER_IMAGE_TAG_NAME
+else
+		echo "restarting " $DOCKER_CONTAINER_NAME
+        	docker restart  $DOCKER_CONTAINER_NAME 
+fi
+
+source utils.sh
+updateEtcHosts $DOCKER_CONTAINER_NAME
+
+
+
+
+
+
+
+
+
+
