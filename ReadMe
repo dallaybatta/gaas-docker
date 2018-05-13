@@ -4,6 +4,7 @@ The project structure contains the following modules
 - service
 - master
 - worker
+- examples
 
 Each module have got the following structure
 <module>
@@ -44,11 +45,18 @@ worker$./run.sh 1
 You can create the GAAS cluster group by running the runall.sh script as 
 $./runall.sh <GROUP_ID>
 
-You can create multiple groups each for specific customer, the GAAS is configured to have the gobblin sample, we can have our own templates deployed, we can copy the 
-deployment artifacts ( template file, jar files) using the docker cp command.
+You can create multiple groups each for specific customer, the examples directory contains the wikiperia sample. To deply and run the wikipedia example there are gradle tasks created.
 
-The GAAS contains the wikipedia sample template deployed which can be tested after the gass cluster container is started.
-1) $./test.sh <GROUP_ID>
+To deploy the wikipedia service you need to do following
+1) cd examples/wikipedia/
+2) $ gradle restartDockerContainers -Pgid=<GROUP_ID>
+
+This will deploy the service to the gobblin gaas cluster with the groupid as 1.
+
+In order to test the deployment you need to do the following
+
+1) cd examples/wikipedia/
+2) $ ./test.sh <GROUP_ID>
 2) Go to the corresponding container work log 
 $.docker exec -it docker-gobblin-cluster-worker-<GROUP_ID> /bin/bash 
 tail -f worker.single.out
