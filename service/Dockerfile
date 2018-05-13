@@ -10,7 +10,6 @@ RUN ["/bin/bash", "install-default.sh"]
 RUN mkdir -p /home/dip/gobblin-dist
 WORKDIR /home/dip/gobblin-dist
 COPY gobblin-distribution-0.13.0.tar.gz ./
-COPY wikipedia.template ./
 
 ENV TERM xterm
 
@@ -23,8 +22,7 @@ rm gobblin-distribution-0.13.0.tar.gz; \
 mkdir -p /home/dip/gobblin-dist/logs; \
 mkdir -p /home/dip/gobblin-dist/templates; \
 mkdir -p /home/dip/gobblin-dist/service-work-dir; \
-mkdir -p /home/dip/gobblin-dist/cluster-job-config-bpu1; \
-cp wikipedia.template /home/dip/gobblin-dist/templates;
+mkdir -p /home/dip/gobblin-dist/cluster-job-config-bpu1;
 
 COPY entry.sh ./ 
 CMD ./entry.sh

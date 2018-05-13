@@ -1,0 +1,52 @@
+apply plugin: 'java'
+
+//https://docs.gradle.org/current/dsl/org.gradle.api.tasks.Copy.html
+task copyRuntimeLibsToGAAS(type: Copy) {
+	println "Starting to prepare the GAAS libraries"
+	from file('lib')
+	from file('wikipedia.template')
+    	into "gaas"
+}
+
+// This will copy the files to the GAAS master node
+task copyJarsToGAASMaster(type: Exec) {
+	dependsOn copyRuntimeLibsToGAAS
+	workingDir './gaas'
+	executable "bash"
+	args "-c", "docker cp gobblin-example-0.13.0.jar \$( docker inspect -f   '{{.Id}}' docker-gobblin-cluster-master-"+findProperty("gid")+" ):/home/dip/gobblin-dist/lib"
+}
+
+// This will copy the files to the GAAS worker node
+task copyJarsToGAASWorker(type: Exec) {
+	dependsOn copyJarsToGAASMaster
+	workingDir './gaas'
+	executable "bash"
+	args "-c", "docker cp gobblin-example-0.13.0.jar \$( docker inspect -f   '{{.Id}}' docker-gobblin-cluster-worker-"+findProperty("gid")+" ):/home/dip/gobblin-dist/lib " 
+}
+
+// This will copy the templates to the GAAS service node.
+task copyTemplateToDocker(type: Exec) {
+	dependsOn copyJarsToGAASWorker 
+	workingDir './gaas'
+	executable "bash"
+	args "-c", "docker cp wikipedia.template \$( docker inspect -f   '{{.Id}}' docker-gobblin-service-"+findProperty("gid")+" ):/home/dip/gobblin-dist/templates "
+}
+
+task restartDockerContainers(type:Exec) {
+	dependsOn copyTemplateToDocker
+	executable "bash"
+	args "-c", "docker restart \$( docker inspect -f   '{{.Id}}' docker-gobblin-cluster-worker-"+findProperty("gid")+" ) "+
+	"&& docker restart \$( docker inspect -f   '{{.Id}}' docker-gobblin-service-"+findProperty("gid")+" ) "+
+	"&& docker restart \$( docker inspect -f   '{{.Id}}' docker-gobblin-cluster-master-"+findProperty("gid")+" )"
+}
+
+
+task cleanUpGAAS(type: Exec) {
+	executable "bash"
+	args "-c", "docker exec docker-gobblin-cluster-master-"+findProperty("gid")+"  rm -rf lib/gobblin-example-0.13.0.jar " + 
+	"&& docker exec docker-gobblin-cluster-worker-"+findProperty("gid")+"  rm -rf lib/gobblin-example-0.13.0.jar " +
+	"&& docker exec docker-gobblin-service-"+findProperty("gid")+"  rm -rf templates/wikipedia.template"
+}
+
+
+ext.classification="library"

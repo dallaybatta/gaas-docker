@@ -10,7 +10,6 @@ RUN ["/bin/bash", "install-default.sh"]
 RUN mkdir -p /home/dip/gobblin-dist
 WORKDIR /home/dip/gobblin-dist
 COPY gobblin-distribution-0.13.0.tar.gz ./
-COPY libs/gobblin-example-0.13.0.jar ./
 COPY libs/gobblin-helix-0.13.0.jar ./
 ENV TERM xterm
 

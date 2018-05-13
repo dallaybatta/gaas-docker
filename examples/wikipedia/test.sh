@@ -6,7 +6,7 @@ echo $RANDOM_ID
 curl http://docker-gobblin-service-"$GROUP_ID":9099/flowconfigs -X POST -H 'X-RestLi-Method: create' -H "Content-Type: application/json" -H 'X-RestLi-Protocol-Version: 2.0.0' --data '{"id": {"flowName":"wikipedia-'$RANDOM_ID'", "flowGroup":"test"},"templateUris" : "FS:///wikipedia.template", "properties" : {"gobblin.flow.sourceIdentifier" : "externalSource", "gobblin.flow.destinationIdentifier" : "InternalSink", "titles" : "rudra,shiva,mahesh"}}'
 
 # Chech the Flow status.
-curl "http://docker-gobblin-service-"$GROUP_ID":9099/flowstatuses/\(flowGroup:test,flowName:wikipedia-"$RANDOM_ID"\)  -X GET -H 'X-RestLi-Protocol-Version: 2.0.0'"
+#curl "http://docker-gobblin-service-"$GROUP_ID":9099/flowstatuses/\(flowGroup:test,flowName:wikipedia-"$RANDOM_ID"\)  -X GET -H 'X-RestLi-Protocol-Version: 2.0.0'"
 
 #curl http://docker-gobblin-service-1:9099/flowstatuses/\(flowGroup:test,flowName:wikipedia-1\)  -X GET -H 'X-RestLi-Protocol-Version: 2.0.0'
 

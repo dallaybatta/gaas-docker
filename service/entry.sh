@@ -26,7 +26,6 @@ sed -e "s|\${GOBBLIN_SERVICE_PORT}|$GOBBLIN_SERVICE_PORT|;s|\${KAFKA_BOOTSTRAP_S
 
 # Move the logging file too
 cp -f ./support/templates/log4j-service.properties $GOBBLIN_HOME/conf/service
-cp -f ./wikipedia.template $GOBBLIN_SERVICE_TEMPLATE_PATH
 echo "copying files" >> boot.log
 
 chmod +x ./bin/**
