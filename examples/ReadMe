@@ -1,8 +1,30 @@
-You can pass the group id as gid and restart the docker gaas for a specific group
+The following instructions explain how to port the existing Gobblin Plugin Code to the docker-gaas
 
-gradle restartDockerContainers -Pgid=<groupId>
+We are considering the wikiperia example. 
 
+1) Start the gaas environment, this is done by executing this
 
-The copyRuntimeLibsToGAAS task in the build.gradle should build the gobblin plugins in a project and then copy the templates and jars to the 
-gaas folder. In case of the wikipedia example we are not building the libraries, we are using the same. Considering the case where there are 
-plugin's are available they could be easily deployed in the gobblin gaas cluster by using the gradle builds as reference.
+$GAAS_DOCKER_HOME ./runall.sh <pid>
+
+2) Next is to deploy the wikipedia to the GAAS
+$GAAS_DOCKER_HOME 
+cd examples/wikipedia
+$GAAS_DOCKER_HOME/examples/wikipedia  gradle restartDockerContainers -Pgid=<groupId>
+
+3) Finally test it
+$GAAS_DOCKER_HOME/examples/wikipedia ./test.sh <gid>
+
+If you want to port the application with the artifacts as foo.jar and foo.template as the the template file.
+The foo.template can be fleshed out from the foo.pull file. Follow the steps to test it on the docker-gaas
+
+1) create a directory as foomigration.
+
+2) create a lib directory in the foomigration and copy foo.jar into it. If there are other dependent jars those all
+should go into it.
+
+3) Copy foo.template into the foomigration.
+
+4) Create a build.gradle into the foomigration directory, you can refer to the build.gradle in the examples directory.
+You may have to make sure that build.gradle copies foo.jar( also dependent jars) and foo.template to the gaas-docker containers.
+
+5) Finally create a test.sh to test the deployment, you can refer to the existing test.sh in the examples directory for reference.
